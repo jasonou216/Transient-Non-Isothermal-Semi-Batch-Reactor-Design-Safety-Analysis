@@ -1,0 +1,38 @@
+{
+  "max_safe_feed_rate_Lmin": {
+    "(a) T_max criterion": 15.945674391740875,
+    "(b) MTSR criterion": 20.36335919066617,
+    "(c) Morbidelli-Varma peak": 5.3053434689829535,
+    "design: (a) AND (b)": 15.945674391740875
+  },
+  "max_safe_feed_min_time_min": {
+    "(a) T_max criterion": 18.813879716206056,
+    "(b) MTSR criterion": 14.732343381612067,
+    "(c) Morbidelli-Varma peak": 56.54676304256521,
+    "design: (a) AND (b)": 18.813879716206056
+  },
+  "cooling_failure_nominal": {
+    "no interlock": {
+      "case": "no interlock",
+      "t_fail": 0.0,
+      "T_at_fail": 313.15,
+      "MTSR_at_fail": 313.15,
+      "T_max": 374.9435739947508,
+      "dT_rise": 61.79357399475083,
+      "TMR_min": 17.211474316210808,
+      "dTdt_max": 0.7976657156817281,
+      "t_to_limit_min": 120.88058705803869
+    },
+    "high-T interlock": {
+      "case": "high-T interlock",
+      "t_fail": 87.93103448275862,
+      "T_at_fail": 329.7440053600617,
+      "MTSR_at_fail": 333.5276174266569,
+      "T_max": 348.06305184499166,
+      "dT_rise": 18.31904648492997,
+      "TMR_min": 7.525706793034431,
+      "dTdt_max": 0.471488897414282,
+      "t_to_limit_min": NaN
+    }
+  }
+}

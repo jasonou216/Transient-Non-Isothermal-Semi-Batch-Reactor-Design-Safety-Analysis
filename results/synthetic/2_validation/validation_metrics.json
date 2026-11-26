@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "run": "V1",
+      "variable": "CA",
+      "units": "mol/L",
+      "RMSE": 0.029244780797464356,
+      "bias": 0.007558410457966192,
+      "max_abs_error": 0.06609896265158602
+    },
+    {
+      "run": "V1",
+      "variable": "CB",
+      "units": "mol/L",
+      "RMSE": 0.03184175498914968,
+      "bias": -0.0059599134241376,
+      "max_abs_error": 0.10163453320097443
+    },
+    {
+      "run": "V1",
+      "variable": "CC",
+      "units": "mol/L",
+      "RMSE": 0.02923435032713834,
+      "bias": 0.005142614169403936,
+      "max_abs_error": 0.07722698969985017
+    },
+    {
+      "run": "V1",
+      "variable": "T",
+      "units": "K",
+      "RMSE": 0.5239662603881673,
+      "bias": -0.026739845756770818,
+      "max_abs_error": 1.1412767149640217
+    },
+    {
+      "run": "V1",
+      "variable": "T_max",
+      "units": "K",
+      "RMSE": NaN,
+      "bias": -1.0255600390908057,
+      "max_abs_error": NaN
+    },
+    {
+      "run": "V1",
+      "variable": "t(T_max)",
+      "units": "min",
+      "RMSE": NaN,
+      "bias": 2.5209390581162303,
+      "max_abs_error": NaN
+    }
+  ]
+}

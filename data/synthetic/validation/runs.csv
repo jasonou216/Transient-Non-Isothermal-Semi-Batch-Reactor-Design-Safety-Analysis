@@ -1,0 +1,2 @@
+run_id,file,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,T_feed_K,notes
+V1,V1.csv,305.15,0.03,40.0,305.15,110.0,,synthetic

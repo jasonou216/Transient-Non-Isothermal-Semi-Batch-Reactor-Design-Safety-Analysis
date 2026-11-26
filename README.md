@@ -13,11 +13,15 @@ recommendation.
 | `docs/project_brief/` | Project statement, benchtop parameters, report grading rubric |
 | `references/tutorial_01_collision_theory/` | Tutorial #1 handout and molecular-collision simulations (background on collision theory / Arrhenius behaviour) |
 | `references/computational_labs/` | Computational Labs 1–7 handouts (batch, semi-batch with variable volume, reactors in series, reversible PFR, rate-data analysis, NH₃ decomposition kinetics, adiabatic PBR feed temperature) |
-| `data/experiments/` | Raw CSVs returned from the virtual-lab experiment requests (5-run budget) |
+| `data/experiments/` | Data returned by the TA + `runs.csv` (requested conditions); 5-run budget |
 | `data/validation/` | Held-out validation dataset (released after parameters are submitted) |
-| `src/` | Project code: reactor model, parameter regression, safety analysis, design studies |
-| `report/` | Technical report drafts, figures and final submission |
+| `data/synthetic/` | Invented test data used only to check the pipeline |
+| `src/` | Analysis pipeline: model, regression, verification, safety, design (see HOW_TO_RUN.md) |
+| `results/` | Figures and tables written by the pipeline (`real/`, `synthetic/`) |
+| `report/` | Report skeleton (Word) and drafts |
 | `ai_log/` | Record of AI-tool prompts and responses (required for the report appendix) |
+
+See **PROJECT_PLAN.md** for the schedule and open decisions, **HOW_TO_RUN.md** to run the code.
 
 ## Project parts
 
@@ -28,7 +32,7 @@ recommendation.
 
 ## Requirements
 
-Python 3 with the packages in `requirements.txt`:
+Python 3.10+ with the packages in `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
