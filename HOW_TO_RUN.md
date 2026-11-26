@@ -21,7 +21,7 @@ Takes about 3–5 minutes, mostly the design grid search.
 |---|---|---|
 | Fit k_ref, Ea, ΔH (Part B) | `python src/fit_parameters.py --dataset real` | `results/real/1_fit/` |
 | Model verification checks | `python src/verify_model.py --dataset real` | `results/real/0_verification/` |
-| Rank candidate next experiments | `python src/plan_experiments.py --dataset real` | `results/real/0_experiment_planning/` |
+| Rank candidate next experiments (add `--batch 2` to plan a pair) | `python src/plan_experiments.py --dataset real --batch 2` | `results/real/0_experiment_planning/` |
 | Validation on held-out run | `python src/validate.py --dataset real` | `results/real/2_validation/` |
 | Full-scale nominal case (Part A) | `python src/full_scale.py --dataset real` | `results/real/3_full_scale/` |
 | Safety and runaway (Part C) | `python src/safety.py --dataset real` | `results/real/4_safety/` |

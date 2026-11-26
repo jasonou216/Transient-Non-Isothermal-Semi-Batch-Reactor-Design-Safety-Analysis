@@ -8,7 +8,11 @@ predicts:
     (D-optimal design). Larger = shrinks the joint confidence region of (k_ref, Ea, dH) most.
 Use the ranking as evidence for your request rationale; the final choice is yours.
 
-    python src/plan_experiments.py --dataset real [--n_points 40]
+--batch 2 plans two runs to request TOGETHER: greedy D-optimal selection (pick the best run,
+add its information, pick the run that best complements it). The pair is chosen jointly, so
+the second run is not a near-duplicate of the first.
+
+    python src/plan_experiments.py --dataset real [--batch 2] [--n_points 40]
 """
 import argparse
 import itertools
@@ -41,7 +45,7 @@ def sensitivities(theta, cond, T_ref, t, sig, rel=1e-3):
     return np.column_stack(cols)
 
 
-def main(dataset, n_points=40):
+def main(dataset, n_points=40, batch=1):
     runs = load_runs(dataset)
     fitfile = C.RESULTS_DIR / dataset / "1_fit" / "params.json"
     if runs and fitfile.exists():
@@ -61,7 +65,7 @@ def main(dataset, n_points=40):
         S = sensitivities(theta, r["cond"], T_ref, r["data"]["t"].to_numpy(), sig)
         F0 += S.T @ S
     kin = kin_from_theta(theta, T_ref)
-    rows = []
+    rows, infos = [], []
     NA0 = C.BENCH["CA0"] * C.BENCH["V0"]
     for T0, q, eq, dTc in itertools.product(*GRID.values()):
         t_feed = eq * NA0 / C.BENCH["CBf"] / q
@@ -71,16 +75,35 @@ def main(dataset, n_points=40):
         if sim["T"].max() > C.T_LIMIT - MARGIN:
             continue
         S = sensitivities(theta, cond, T_ref, t, sig)
+        infos.append(S.T @ S)
         gain = np.linalg.slogdet(F0 + S.T @ S)[1] - np.linalg.slogdet(F0)[1]
         se_new = np.sqrt(np.diag(np.linalg.inv(F0 + S.T @ S)))
         rows.append(dict(T0_K=T0, feed_flow_Lmin=q, feed_duration_min=round(t_feed, 1),
                          T_coolant_K=T0 + dTc, t_final_min=cond["t_final"], eq_B=eq,
                          pred_T_max_K=round(sim["T"].max(), 1), pred_X_end=round(sim["XA"].iloc[-1], 3),
                          info_gain=gain, se_Ea_after=se_new[1], se_dH_after=se_new[2]))
-    table = pd.DataFrame(rows).sort_values("info_gain", ascending=False)
+    table = pd.DataFrame(rows)
     folder = out_dir(dataset, "0_experiment_planning")
-    table.to_csv(folder / f"candidates_after_{len(runs)}_runs.csv", index=False)
-    print(table.head(10).to_string(index=False, float_format=lambda x: f"{x:.3g}"))
+    table.sort_values("info_gain", ascending=False).to_csv(
+        folder / f"candidates_after_{len(runs)}_runs.csv", index=False)
+    print(table.sort_values("info_gain", ascending=False).head(10)
+          .to_string(index=False, float_format=lambda x: f"{x:.3g}"))
+
+    if batch > 1:                                  # greedy joint selection
+        F, chosen = F0.copy(), []
+        for _ in range(batch):
+            gains = [np.linalg.slogdet(F + I)[1] if i not in chosen else -np.inf for i, I in enumerate(infos)]
+            i = int(np.argmax(gains))
+            chosen.append(i)
+            F = F + infos[i]
+        se0, se1 = np.sqrt(np.diag(np.linalg.inv(F0))), np.sqrt(np.diag(np.linalg.inv(F)))
+        pick = table.iloc[chosen].copy()
+        pick.insert(0, "request", [f"next #{k + 1}" for k in range(batch)])
+        pick.to_csv(folder / f"batch_of_{batch}_after_{len(runs)}_runs.csv", index=False)
+        print(f"\nRecommended batch of {batch} (chosen jointly):")
+        print(pick.drop(columns=["info_gain", "se_Ea_after", "se_dH_after"]).to_string(index=False))
+        print("Predicted std. error  [ln k_ref, Ea kJ/mol, dH kJ/mol]: "
+              f"now {np.round(se0, 3)} -> after batch {np.round(se1, 3)}")
     return table
 
 
@@ -88,5 +111,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", default="real", choices=["real", "synthetic"])
     ap.add_argument("--n_points", type=int, default=40)
+    ap.add_argument("--batch", type=int, default=1)
     a = ap.parse_args()
-    main(a.dataset, a.n_points)
+    main(a.dataset, a.n_points, a.batch)
