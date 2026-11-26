@@ -12,7 +12,7 @@ recommendation.
 | --- | --- |
 | `docs/project_brief/` | Project statement, benchtop parameters, report grading rubric |
 | `references/tutorial_01_collision_theory/` | Tutorial #1 handout and molecular-collision simulations (background on collision theory / Arrhenius behaviour) |
-| `references/computational_labs/` | Computational Labs 1–4 handouts (batch, semi-batch with variable volume, reactors in series, reversible PFR) |
+| `references/computational_labs/` | Computational Labs 1–7 handouts (batch, semi-batch with variable volume, reactors in series, reversible PFR, rate-data analysis, NH₃ decomposition kinetics, adiabatic PBR feed temperature) |
 | `data/experiments/` | Raw CSVs returned from the virtual-lab experiment requests (5-run budget) |
 | `data/validation/` | Held-out validation dataset (released after parameters are submitted) |
 | `src/` | Project code: reactor model, parameter regression, safety analysis, design studies |
