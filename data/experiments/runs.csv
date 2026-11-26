@@ -1,4 +1,4 @@
-# One row per experiment you requested. 'file' = the data file the TA returned (put it in this folder).
-# T_feed_K blank = default 298.15 K. Delete the '#' from the example line and edit it.
+# One row per experiment requested. 'file' = data file returned by the TA (in this folder).
+# T_feed_K blank = default 298.15 K.
 run_id,file,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,T_feed_K,notes
-# R1,R1.csv,305,0.04,40,295,100,,purpose of this run
+R1,G33_run_20261126_140647.csv,298.15,0.05,20,298.15,150,,baseline: stoichiometric B (1.0 L) over 20 min at 25 C

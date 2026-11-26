@@ -2,7 +2,8 @@
 
 For each candidate condition the current model (fit so far, or PRIOR before any data)
 predicts:
-  * T_max  -> reject candidates that come within MARGIN of the 100 C limit
+  * T_max  -> reject candidates that come within MARGIN of the 100 C limit, checked at the
+              fitted Ea AND at its 95 % upper and lower bounds (robust to Ea uncertainty)
   * information gain = log det(F_existing + F_candidate), where F = S^T W S is the Fisher
     information from output sensitivities S = d(CA,CB,CC,T)/d(theta) at the sampled times
     (D-optimal design). Larger = shrinks the joint confidence region of (k_ref, Ea, dH) most.
@@ -25,6 +26,7 @@ from common import bench_reactor, kin_from_theta, load_runs, out_dir
 from model import simulate
 
 MARGIN = 20.0                                       # K below T_LIMIT for a planned run
+T_FINAL_MIN = 150.0                                 # min run length (TA: no limit on t_final / n_points)
 GRID = dict(T0=[293.15, 303.15, 313.15, 323.15, 333.15],
             q=[0.02, 0.04, 0.08],
             eq_B=[1.0, 1.5],                        # mol B fed / mol A charged
@@ -65,14 +67,17 @@ def main(dataset, n_points=40, batch=1):
         S = sensitivities(theta, r["cond"], T_ref, r["data"]["t"].to_numpy(), sig)
         F0 += S.T @ S
     kin = kin_from_theta(theta, T_ref)
+    se_Ea = np.sqrt(np.linalg.inv(F0)[1, 1]) if runs else 0.3 * theta[1]
+    kin_band = [kin_from_theta(theta + np.array([0, s * 1.96 * se_Ea, 0]), T_ref) for s in (-1, 1)]
     rows, infos = [], []
     NA0 = C.BENCH["CA0"] * C.BENCH["V0"]
     for T0, q, eq, dTc in itertools.product(*GRID.values()):
         t_feed = eq * NA0 / C.BENCH["CBf"] / q
-        cond = dict(T0=T0, q=q, t_feed=t_feed, Tc=T0 + dTc, t_final=round(t_feed + 60, -1))
+        cond = dict(T0=T0, q=q, t_feed=t_feed, Tc=T0 + dTc, t_final=max(T_FINAL_MIN, round(t_feed + 60, -1)))
         t = np.linspace(0, cond["t_final"], n_points)
         sim = simulate(bench_reactor(cond), kin, cond["t_final"])
-        if sim["T"].max() > C.T_LIMIT - MARGIN:
+        T_worst = max(simulate(bench_reactor(cond), k, cond["t_final"])["T"].max() for k in kin_band)
+        if T_worst > C.T_LIMIT - MARGIN:
             continue
         S = sensitivities(theta, cond, T_ref, t, sig)
         infos.append(S.T @ S)
@@ -80,7 +85,8 @@ def main(dataset, n_points=40, batch=1):
         se_new = np.sqrt(np.diag(np.linalg.inv(F0 + S.T @ S)))
         rows.append(dict(T0_K=T0, feed_flow_Lmin=q, feed_duration_min=round(t_feed, 1),
                          T_coolant_K=T0 + dTc, t_final_min=cond["t_final"], eq_B=eq,
-                         pred_T_max_K=round(sim["T"].max(), 1), pred_X_end=round(sim["XA"].iloc[-1], 3),
+                         pred_T_max_K=round(sim["T"].max(), 1), T_max_worst_Ea_K=round(T_worst, 1),
+                         pred_X_end=round(sim["XA"].iloc[-1], 3),
                          info_gain=gain, se_Ea_after=se_new[1], se_dH_after=se_new[2]))
     table = pd.DataFrame(rows)
     folder = out_dir(dataset, "0_experiment_planning")
