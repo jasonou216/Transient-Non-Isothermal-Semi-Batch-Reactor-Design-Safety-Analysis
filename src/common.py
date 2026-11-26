@@ -38,7 +38,7 @@ def load_runs(dataset, validation=False):
                     t_feed=float(row["feed_duration_min"]), Tc=float(row["T_coolant_K"]),
                     t_final=float(row["t_final_min"]),
                     T_feed=float(T_feed) if pd.notna(T_feed) else C.BENCH["T_feed"])
-        runs.append(dict(run_id=str(row["run_id"]), cond=cond, data=df))
+        runs.append(dict(run_id=str(row["run_id"]), cond=cond, data=df, file=path.name))
     return runs
 
 
