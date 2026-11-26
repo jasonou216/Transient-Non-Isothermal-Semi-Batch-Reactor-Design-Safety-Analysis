@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+# CSVs auto-written by the tutorial simulations
+references/tutorial_01_collision_theory/*_data_*.csv
