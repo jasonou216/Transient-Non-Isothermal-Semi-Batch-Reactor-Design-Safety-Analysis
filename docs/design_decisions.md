@@ -1,6 +1,6 @@
 # Design decisions
 
-Every engineering choice in this project, in one list. Each entry gives the value, where it is set
+Every engineering choice in this project, in one list. Ensured no AI involvement with decision making. Each entry gives the value, where it is set
 in the code, why it was chosen, and its status. Settled decisions are justified in the report
 section listed. Open decisions wait on more data.
 
