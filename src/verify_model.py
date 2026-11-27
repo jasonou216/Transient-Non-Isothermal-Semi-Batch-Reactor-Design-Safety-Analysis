@@ -29,8 +29,12 @@ def main(dataset):
     def add(check, case, value, tol, unit):
         rows.append(dict(check=check, case=case, value=value, tolerance=tol, units=unit, passed=abs(value) <= tol))
 
-    cases = {"bench": bench_reactor(dict(T0=303.15, q=0.04, t_feed=25.0, Tc=298.15)),
-             "full scale": full_reactor()}
+    # Bench case = the first real experiment's conditions (so the report's Table 3 refers to Run 1);
+    # falls back to a generic bench case when no data exist yet.
+    from common import load_runs
+    runs = load_runs(dataset)
+    bench_cond = runs[0]["cond"] if runs else dict(T0=303.15, q=0.04, t_feed=25.0, Tc=298.15)
+    cases = {"bench": bench_reactor(bench_cond), "full scale": full_reactor()}
     for name, rx in cases.items():
         t_end = max(b for _, b, _ in rx.feed) + 120
         df = simulate(rx, kin, t_end, n=800)
