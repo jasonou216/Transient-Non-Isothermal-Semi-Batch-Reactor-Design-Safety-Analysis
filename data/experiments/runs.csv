@@ -1,4 +1,4 @@
-# One row per experiment requested. 'file' = data file returned by the TA (in this folder).
+# One row per experiment requested. 'file' = data file returned by the TA, stored unedited in data/raw/.
 # T_feed_K blank = default 298.15 K.
 run_id,file,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,T_feed_K,notes
 R1,G33_run_20261126_140647.csv,298.15,0.05,20,298.15,150,,baseline: stoichiometric B (1.0 L) over 20 min at 25 C

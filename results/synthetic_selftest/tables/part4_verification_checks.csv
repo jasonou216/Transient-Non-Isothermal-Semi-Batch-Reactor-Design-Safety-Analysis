@@ -1,0 +1,17 @@
+check,case,value,tolerance,units,passed
+N_A + N_C = N_A0,bench,4.440892098500626e-16,1e-06,relative,True
+N_B + N_C = B fed,bench,4.440892098500626e-16,1e-06,relative,True
+V = V0 + volume fed,bench,9.43689570931383e-16,1e-06,relative,True
+adiabatic energy balance,bench,4.164461651932916e-10,1e-06,relative,True
+isothermal post-feed analytic C_A,bench,1.305911490057099e-09,1e-05,relative,True
+tolerance convergence: T,bench,0.0003417499928559664,0.01,K,True
+tolerance convergence: X_A,bench,5.612834773627284e-06,0.0001,-,True
+adiabatic failure T_final = MTSR,bench,-4.348521542851813e-11,0.05,K,True
+N_A + N_C = N_A0,full scale,1.3263464400855204e-15,1e-06,relative,True
+N_B + N_C = B fed,full scale,1.7053025658242404e-15,1e-06,relative,True
+V = V0 + volume fed,full scale,1.329307034817854e-15,1e-06,relative,True
+adiabatic energy balance,full scale,3.804387234515801e-11,1e-06,relative,True
+isothermal post-feed analytic C_A,full scale,3.083361621580849e-10,1e-05,relative,True
+tolerance convergence: T,full scale,4.904042486941762e-05,0.01,K,True
+tolerance convergence: X_A,full scale,2.3881159449956613e-07,0.0001,-,True
+adiabatic failure T_final = MTSR,full scale,-8.253664418589324e-11,0.05,K,True

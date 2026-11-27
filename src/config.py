@@ -7,9 +7,20 @@ Units used throughout the code: L, mol, min, K, J (heat rates reported in W).
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIRS = {"real": ROOT / "data" / "experiments", "synthetic": ROOT / "data" / "synthetic"}
-VALIDATION_DIRS = {"real": ROOT / "data" / "validation", "synthetic": ROOT / "data" / "synthetic" / "validation"}
-RESULTS_DIR = ROOT / "results"
+
+# Where each dataset lives.  "real" is the bench data from the TA; "synthetic" is the
+# self-test (data made from known parameters, used to prove the pipeline recovers them).
+#   raw         data files exactly as returned (never edited by hand or by code)
+#   experiments the run manifests: runs.csv (fitting) and validation_runs.csv
+#   processed   intermediate data written by the code (fitted parameters, profiles, grids)
+#   results     report-ready figures/ and tables/
+_SYN = ROOT / "data" / "synthetic"
+DATASETS = {
+    "real": dict(raw=ROOT / "data" / "raw", experiments=ROOT / "data" / "experiments",
+                 processed=ROOT / "data" / "processed", results=ROOT / "results"),
+    "synthetic": dict(raw=_SYN / "raw", experiments=_SYN / "experiments",
+                      processed=_SYN / "processed", results=ROOT / "results" / "synthetic_selftest"),
+}
 
 R = 8.314  # J/(mol K)
 

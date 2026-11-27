@@ -1,0 +1,3 @@
+# Validation runs (held out from the fit). Same columns as runs.csv; data files go in data/raw/.
+# Add a row when the validation data are released.
+run_id,file,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,T_feed_K,notes

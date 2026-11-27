@@ -2,7 +2,7 @@
 conversion target and the batch time.
 
 For each (target, batch time) the design grid is searched with the same selection rule as
-design.py (smallest UA reaching the target, then largest safety margin), and the chosen design
+design_optimization.py (smallest UA reaching the target, then largest safety margin), and the chosen design
 is checked against fitted-parameter uncertainty by Monte Carlo.
 
     python src/design_scenarios.py --dataset real
@@ -12,8 +12,8 @@ import argparse
 import pandas as pd
 
 import config as C
-import design
-from common import load_fit, out_dir, sample_kinetics
+import design_optimization as design
+from common import load_fit, sample_kinetics, table_path
 
 SCENARIOS = [(0.95, 240.0), (0.92, 240.0), (0.90, 240.0), (0.95, 300.0), (0.95, 360.0)]
 N_MC = 200
@@ -41,7 +41,7 @@ def main(dataset):
                          X_A_p05=mc.XA_end.quantile(0.05)))
         print(rows[-1])
     table = pd.DataFrame(rows)
-    table.to_csv(out_dir(dataset, "5_design") / "scenarios.csv", index=False)
+    table.to_csv(table_path(dataset, "part10_design_scenarios"), index=False)
     print(table.round(3).to_string(index=False))
 
 

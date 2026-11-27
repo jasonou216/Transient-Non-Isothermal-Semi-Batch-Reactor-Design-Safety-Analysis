@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 import config as C
-from model import Kinetics, Reactor, constant_feed
+from semi_batch_model import Kinetics, Reactor, constant_feed
 
 plt.rcParams.update({"figure.dpi": 100, "savefig.dpi": C.FIG_DPI, "font.size": 10,
                      "axes.grid": True, "grid.alpha": 0.3, "savefig.bbox": "tight"})
@@ -18,15 +18,18 @@ DATA_COLS = {"time_min": "t", "ca_moll": "CA", "cb_moll": "CB", "cc_moll": "CC",
 
 # ----------------------------------------------------------------------------- data
 def load_runs(dataset, validation=False):
-    """Read runs.csv (one row per experiment, the conditions you requested) and each
-    returned data file. Columns expected in the data: time_min, CA_molL, CB_molL, CC_molL, T_K."""
-    folder = (C.VALIDATION_DIRS if validation else C.DATA_DIRS)[dataset]
-    manifest = folder / "runs.csv"
+    """Read the run manifest (one row per experiment: the conditions requested) and each
+    raw data file it points to. Data columns expected: time_min, CA_molL, CB_molL, CC_molL, T_K.
+
+    Manifests live in data/experiments/ (runs.csv for fitting, validation_runs.csv for
+    validation); the data files themselves live untouched in data/raw/."""
+    d = C.DATASETS[dataset]
+    manifest = d["experiments"] / ("validation_runs.csv" if validation else "runs.csv")
     if not manifest.exists():
         return []
     runs = []
     for _, row in pd.read_csv(manifest, comment="#").iterrows():
-        path = folder / str(row["file"]).strip()
+        path = d["raw"] / str(row["file"]).strip()
         if not path.exists():
             print(f"  [skip] {row['run_id']}: data file {path.name} not found yet")
             continue
@@ -65,10 +68,27 @@ def full_reactor(feed=None, UA_factor=None, T0=None, Tc=None, **kw):
 
 
 # ----------------------------------------------------------------------------- results
-def out_dir(dataset, step):
-    d = C.RESULTS_DIR / dataset / step
-    d.mkdir(parents=True, exist_ok=True)
-    return d
+def _path(dataset, kind, name):
+    base = C.DATASETS[dataset]
+    folder = {"figure": base["results"] / "figures", "table": base["results"] / "tables",
+              "processed": base["processed"]}[kind]
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder / name
+
+
+def fig_path(dataset, name):
+    """results/figures/<name>.png : a figure that goes in the report."""
+    return _path(dataset, "figure", f"{name}.png")
+
+
+def table_path(dataset, name, ext="csv"):
+    """results/tables/<name>.csv : a table that goes in the report."""
+    return _path(dataset, "table", f"{name}.{ext}")
+
+
+def processed_path(dataset, name):
+    """data/processed/<name> : intermediate data the code writes and reads back."""
+    return _path(dataset, "processed", name)
 
 
 def save_json(obj, path):
@@ -83,9 +103,9 @@ def save_json(obj, path):
 
 def load_fit(dataset):
     """Fitted Kinetics + covariance of theta = [ln k_ref, Ea (kJ/mol), dH (kJ/mol)]."""
-    p = C.RESULTS_DIR / dataset / "1_fit" / "params.json"
+    p = processed_path(dataset, "fitted_parameters.json")
     if not p.exists():
-        raise FileNotFoundError(f"No fit for '{dataset}' yet - run fit_parameters.py first.")
+        raise FileNotFoundError(f"No fit for '{dataset}' yet - run parameter_estimation.py first.")
     d = json.loads(p.read_text())
     kin = Kinetics(k_ref=d["k_ref"], Ea=d["Ea_kJmol"] * 1e3, dH=d["dH_kJmol"] * 1e3, T_ref=d["T_ref"])
     return kin, np.array(d["theta"]), np.array(d["cov_theta"]), d
