@@ -25,7 +25,7 @@ import config as C
 from common import bench_reactor, kin_from_theta, load_runs, out_dir
 from model import simulate
 
-MARGIN = 20.0                                       # K below T_LIMIT for a planned run
+MARGIN = C.T_LIMIT - C.PLAN_T_MAX                   # K below T_LIMIT for a planned run (config)
 T_FINAL_MIN = 150.0                                 # min run length (TA: no limit on t_final / n_points)
 GRID = dict(T0=[293.15, 303.15, 313.15, 323.15, 333.15],
             q=[0.02, 0.04, 0.08],
@@ -110,7 +110,32 @@ def main(dataset, n_points=40, batch=1):
         print(pick.drop(columns=["info_gain", "se_Ea_after", "se_dH_after"]).to_string(index=False))
         print("Predicted std. error  [ln k_ref, Ea kJ/mol, dH kJ/mol]: "
               f"now {np.round(se0, 3)} -> after batch {np.round(se1, 3)}")
+        if runs and fitfile.exists():
+            stopping_rule(dataset, se0, se1)
     return table
+
+
+def stopping_rule(dataset, se_now, se_after):
+    """Part 5 stopping rule: adequacy first, then precision OR diminishing returns."""
+    import json
+    d = json.loads((C.RESULTS_DIR / dataset / "1_fit" / "params.json").read_text())
+    tab = pd.read_csv(C.RESULTS_DIR / dataset / "1_fit" / "params_table.csv")
+    rel = tab["rel_95CI_%"].to_numpy()                   # order: k_ref, Ea, dH (= theta order)
+    worst = int(np.argmax(rel))
+    gain = (se_now[worst] - se_after[worst]) / se_now[worst]
+    lo, hi = C.STOP_S2_RANGE
+    adequate = lo <= d["s2"] <= hi
+    precise = bool((rel <= C.STOP_REL_CI).all())
+    small_gain = gain < C.STOP_MIN_GAIN
+    print("\nStopping rule (Part 5):")
+    print(f"  adequacy  s^2 = {d['s2']:.3f} within {C.STOP_S2_RANGE}: {adequate}  (also inspect residual plots)")
+    print(f"  precision every 95% CI within +/-{C.STOP_REL_CI}%: {precise}  "
+          f"(k_ref {rel[0]:.1f}%, Ea {rel[1]:.1f}%, dH {rel[2]:.1f}%)")
+    print(f"  diminishing returns: best batch cuts SE of {tab.parameter[worst]} by {100 * gain:.0f}% "
+          f"(stop if < {100 * C.STOP_MIN_GAIN:.0f}%): {small_gain}")
+    verdict = adequate and (precise or small_gain)
+    print("  -> STOP experimenting" if verdict else "  -> CONTINUE: request the recommended batch")
+    return verdict
 
 
 if __name__ == "__main__":

@@ -68,4 +68,12 @@ MARGIN_NORMAL = 15.0   # K
 MARGIN_FAILURE = 5.0   # K
 T_TRIP = 343.15        # K, high-temperature interlock that cuts the B feed (Part D)
 
+# Experimental design (Part 5).  DECISION - stated in the report.
+PLAN_T_MAX = T_LIMIT - 20.0  # K, safety screen: send a run only if predicted T_max <= 80 C
+                             #    (checked at the fitted Ea and both ends of its 95 % CI)
+STOP_REL_CI = 5.0            # %, stop if every parameter's 95 % CI is within +/- this
+STOP_MIN_GAIN = 0.10         # stop if the best candidate cuts the SE of the least certain
+                             #    parameter by less than this fraction
+STOP_S2_RANGE = (0.8, 1.25)  # fit adequacy prerequisite: s^2 (weighted residual variance)
+
 FIG_DPI = 200

@@ -49,6 +49,8 @@ All of these live in `src/config.py`.
 | High-T interlock trip | 70 °C | after the safety results |
 | Nominal Part A case | T0 = Tc = 40 °C, 120 min feed | after fit |
 | UA scaling | ∝ V^(2/3), about 670 W/K | fixed (the design step sweeps UA) |
+| Safety screen for requests | predicted T_max ≤ 80 °C at the fitted Ea and both ends of its 95 % CI | set (Part 5) |
+| Stopping rule | adequate fit (s² 0.8–1.25), then all 95 % CIs ≤ ±5 % or best batch cuts the worst SE by < 10 % | set (Part 5) |
 
 ## Status
 
