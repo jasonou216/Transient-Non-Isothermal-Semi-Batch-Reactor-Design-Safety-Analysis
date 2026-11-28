@@ -160,6 +160,22 @@ def write_processed_runs(runs, kin, dataset):
         out.to_csv(processed_path(dataset, f"{run['run_id']}_processed.csv"), index=False, float_format="%.6g")
 
 
+def fit_history(runs, final_res):
+    """Refit at each milestone in config.FIT_MILESTONES (plus the full set) so the report can show
+    how the confidence intervals shrank as runs were added. Written to part5_fit_history.csv."""
+    sizes = sorted({n for n in C.FIT_MILESTONES if n < len(runs)} | {len(runs)})
+    rows = []
+    for i, n in enumerate(sizes, 1):
+        res = final_res if n == len(runs) else fit(runs[:n])
+        tab, _ = report(res)
+        for _, r in tab.iterrows():
+            rows.append(dict(fit=f"Fit {i}", runs=", ".join(x["run_id"] for x in runs[:n]), n_runs=n,
+                             T_ref_K=res["T_ref"], s2=res["s2"], n_obs=res["n"], parameter=r["parameter"], units=r["units"],
+                             estimate=r["estimate"], ci95_low=r["ci95_low"], ci95_high=r["ci95_high"],
+                             rel_95CI_pct=r["rel_95CI_%"]))
+    return pd.DataFrame(rows)
+
+
 def main(dataset):
     runs = load_runs(dataset)
     if not runs:
@@ -176,6 +192,7 @@ def main(dataset):
                    n_obs=res["n"], dof=res["dof"], JtJ_condition_number=res["cond_number"],
                    runs=[r["run_id"] for r in runs]), processed_path(dataset, "fitted_parameters.json"))
     plot_runs(runs, kin, dataset)
+    fit_history(runs, res).to_csv(table_path(dataset, "part5_fit_history"), index=False)
     write_processed_runs(runs, kin, dataset)
     print(table.to_string(index=False, float_format=lambda x: f"{x:.4g}"))
     print("Correlation:\n" + corr.round(3).to_string())

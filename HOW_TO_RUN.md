@@ -231,6 +231,15 @@ It builds `results/tables/ENCH421_Results_by_Run.xlsx`: one tab per run with the
 conversion calculations as live formulas, the fitted model, residuals and charts. Upload it to Google
 Drive to open it as a Google Sheet.
 
+### Step 11 (optional): results pack (all figures and tables in one document)
+
+```bash
+python src/results_pack.py
+```
+
+It builds `results/ENCH421_Results_Pack.docx`: every figure with its finding caption and every key table, in
+the report's format (Times New Roman). Upload it to Google Drive to open it as a Google Doc.
+
 ## 6. Adding a new bench run
 
 1. Copy the file the TA returned into `data/raw/` without changing it. It can be CSV or Excel, with

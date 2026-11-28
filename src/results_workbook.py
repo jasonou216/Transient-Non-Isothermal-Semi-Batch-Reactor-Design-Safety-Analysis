@@ -189,15 +189,16 @@ def main(dataset="real"):
         ws.cell(4, j, t)
     style_header(ws, 4, 1, len(hd))
     import pandas as pd
-    tab = pd.read_csv(table_path(dataset, "part6_fitted_parameters"))
-    vals = ["Fit 1", ", ".join(fit["runs"]), fit["T_ref"]]
-    for _, r in tab.iterrows():
-        vals += [r.estimate, r.ci95_low, r.ci95_high]
-    vals += [fit["n_obs"], fit["s2"]]
-    for j, v in enumerate(vals, 1):
-        c = ws.cell(5, j, float(v) if isinstance(v, (int, float, np.floating)) else v)
-        c.border, c.font = BOX, NORMAL
-        c.number_format = "0.00000" if j in (4, 5, 6) else "0.00"
+    hist = pd.read_csv(table_path(dataset, "part5_fit_history"))
+    for i, (name, g) in enumerate(hist.groupby("fit", sort=True)):
+        vals = [name, g.runs.iloc[0], g.T_ref_K.iloc[0]]
+        for _, r in g.iterrows():
+            vals += [r.estimate, r.ci95_low, r.ci95_high]
+        vals += [int(g.n_obs.iloc[0]), g.s2.iloc[0]]
+        for j, v in enumerate(vals, 1):
+            c = ws.cell(5 + i, j, float(v) if isinstance(v, (int, float, np.floating, np.integer)) else v)
+            c.border, c.font = BOX, NORMAL
+            c.number_format = "0.00000" if j in (4, 5, 6) else "0.00"
     ws["A5"].comment = Comment("Source: src/parameter_estimation.py, results/tables/part6_fitted_parameters.csv", "G33")
 
     ws["A8"], ws["A8"].font = "Key results per run (formulas on each run tab)", BOLD

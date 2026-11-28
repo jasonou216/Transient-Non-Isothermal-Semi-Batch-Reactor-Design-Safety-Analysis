@@ -92,6 +92,8 @@ PLAN_T_MAX = T_LIMIT - 20.0  # K, safety screen: send a run only if predicted T_
 STOP_REL_CI = 5.0            # %, stop if every parameter's 95 % CI is within +/- this
 STOP_MIN_GAIN = 0.10         # stop if the best candidate cuts the SE of the least certain
                              #    parameter by less than this fraction
-STOP_S2_RANGE = (0.8, 1.25)  # fit adequacy prerequisite: s^2 (weighted residual variance)
+STOP_S2_RANGE = (0.8, 1.25)
+FIT_MILESTONES = [1, 3]      # number of runs at each refit, as the campaign was run: Fit 1 after Run 1,
+                             #    Fit 2 after the Run 2 + 3 pair (part5_fit_history.csv)  # fit adequacy prerequisite: s^2 (weighted residual variance)
 
 FIG_DPI = 200

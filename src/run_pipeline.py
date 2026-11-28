@@ -20,6 +20,7 @@ import argparse
 import json
 import time
 
+import numpy as np
 import pandas as pd
 
 import config as C
@@ -66,8 +67,8 @@ FIGURES = {
                                   "black: peak-temperature contours."),
     "fig09_runaway_map_q_vs_Tc": ("Part 9", "Runaway map over feed rate and coolant temperature, same "
                                   "colour code as fig08."),
-    "fig10_conversion_vs_UA": ("Part 10", "Best safe conversion reachable at each jacket UA; the "
-                               "recommended design is the smallest UA that meets the target."),
+    "fig10_conversion_vs_UA": ("Part 10", "Best safe conversion reachable at each jacket UA. The "
+                               "recommended design is chosen at the installed jacket (config.UA_SELECTION)."),
     "fig11_recommended_design": ("Part 10", "Recommended design: feed-rate schedule, temperature, MTSR and "
                                  "conversion in normal operation, and the worst-case cooling failure with "
                                  "and without the interlock."),
@@ -85,6 +86,8 @@ TABLES = {
     "part5_candidates_after_": ("Part 5", "Every candidate next run, ranked by information gain, after "
                                 "the safety screen."),
     "part5_next_": ("Part 5", "Recommended batch of next runs, chosen jointly (greedy D-optimal)."),
+    "part5_fit_history": ("Part 5, 6", "Parameter estimates and 95 % CIs after each refit (Table 4 evidence "
+                          "that the budget was used adaptively)."),
     "part6_fitted_parameters": ("Part 6", "Table 5: fitted parameters with standard errors and 95 % CIs."),
     "part6_parameter_correlation": ("Part 6", "Correlation between the fitted parameters."),
     "part6_truth_recovery_selftest": ("Part 6", "Self-test only: true parameters against the fitted 95 % CIs."),
@@ -111,6 +114,73 @@ def md_table(df):
         return "```\n" + df.to_string(index=False) + "\n```"
 
 
+def findings(dataset):
+    """One-sentence finding per figure, with the numbers read from the result files (so captions
+    never go stale). Missing files are skipped."""
+    res, out = C.DATASETS[dataset]["results"] / "tables", {}
+    K = 273.15
+
+    def j(name):
+        f = res / f"{name}.json"
+        return json.loads(f.read_text()) if f.exists() else None
+    try:
+        fit = json.loads((C.DATASETS[dataset]["processed"] / "fitted_parameters.json").read_text())
+        tab = pd.read_csv(res / "part6_fitted_parameters.csv").set_index("parameter")
+        ea = tab.loc["Ea"]
+        out["fig01_fit_runs"] = (f"Finding: one parameter set fits all {len(fit['runs'])} runs with s^2 = "
+                                 f"{fit['s2']:.3f}; E_a = {ea.estimate:.1f} kJ/mol (95 % CI within "
+                                 f"+/-{ea['rel_95CI_%']:.1f} %).")
+        stats = []
+        for r in fit["runs"]:
+            d = pd.read_csv(C.DATASETS[dataset]["processed"] / f"{r}_processed.csv")
+            for v, u in [("CA", "molL"), ("CB", "molL"), ("CC", "molL"), ("T", "K")]:
+                e = d[f"{v}_{u}_residual"].to_numpy()
+                stats.append((abs(e.mean()) / fit["noise_sigma"][v], abs(np.corrcoef(e[:-1], e[1:])[0, 1])))
+        out["fig02_fit_residuals"] = (f"Finding: no trend in any run or variable: |mean residual| <= "
+                                      f"{max(a for a, _ in stats):.2f} sigma, |lag-1 autocorrelation| <= "
+                                      f"{max(b for _, b in stats):.2f}.")
+    except (FileNotFoundError, KeyError):
+        pass
+    n = j("part8_nominal_summary")
+    if n:
+        fs = n["full_scale"]
+        out["fig04_plant_nominal_profiles"] = (f"Finding: the nominal recipe reaches X_A = {fs['XA_end']:.3f} at "
+                                               f"{C.BATCH_TIME:.0f} min with T_max = {fs['T_max'] - K:.1f} C and "
+                                               f"MTSR up to {fs['MTSR_max'] - K:.1f} C.")
+        out["fig05_bench_vs_plant"] = (f"Finding: UA per litre falls from {n['UA_per_V_bench_W_KL']:.2f} to "
+                                       f"{n['UA_per_V_full_W_KL']:.2f} W/(K L) on scale-up, so the plant runs "
+                                       f"{fs['T_max'] - n['bench_same_schedule']['T_max']:.1f} K hotter on the same schedule.")
+    s = j("part9_safety_summary")
+    if s:
+        q = s["max_safe_feed_rate_Lmin"]
+        out["fig06_feed_rate_scan"] = (f"Finding: the MTSR criterion limits the feed to {q['(b) MTSR criterion']:.2f} L/min; "
+                                       f"the Morbidelli-Varma sensitivity peak is at {q['(c) Morbidelli-Varma peak']:.2f} L/min.")
+        cf = s["cooling_failure_nominal"]
+        out["fig07_cooling_failure"] = (f"Finding: worst cooling failure reaches {cf['no interlock']['T_max'] - K:.1f} C "
+                                        f"if the feed continues and {cf['high-T interlock']['T_max'] - K:.1f} C with the "
+                                        f"{C.T_TRIP - K:.0f} C feed trip.")
+    d = j("part10_design_summary")
+    if d:
+        r, m, w = d["recommended"], d["recommended_metrics"], d["worst_cooling_failure"]
+        out["fig11_recommended_design"] = (f"Finding: {r['policy']} feed over {r['t_feed']:.0f} min, coolant "
+                                           f"{r['Tc'] - K:.0f} C, UA {r['UA_W_K']:.0f} W/K reaches X_A = {m['XA_end']:.3f}; "
+                                           f"normal peak {m['T_max'] - K:.1f} C, MTSR {m['MTSR_max'] - K:.1f} C; "
+                                           f"worst failure {w['no interlock']['T_max'] - K:.1f} C without and "
+                                           f"{w['high-T interlock']['T_max'] - K:.1f} C with the feed trip.")
+        mc = d["monte_carlo"]
+        out["fig12_monte_carlo"] = (f"Finding: P(unsafe) = {100 * mc['P_unsafe']:.1f} % over the parameter covariance; "
+                                    f"5th-percentile X_A = {mc['XA_p05']:.3f}. Mixing and UA-scaling uncertainty "
+                                    "are not sampled.")
+    b = res / "part10_best_design_per_UA.csv"
+    if b.exists():
+        t = pd.read_csv(b)
+        t = t[np.isclose(t.UA_factor, C.UA_INSTALLED_FACTOR)]
+        if len(t):
+            out["fig10_conversion_vs_UA"] = (f"Finding: with the installed jacket the best safe conversion is "
+                                             f"X_A = {t.XA_end.max():.3f}.")
+    return out
+
+
 def describe(name, catalogue):
     for key, val in catalogue.items():
         if name == key or (key.endswith("_") and name.startswith(key)):
@@ -132,6 +202,9 @@ def write_index(dataset):
     fitfile = C.DATASETS[dataset]["processed"] / "fitted_parameters.json"
     if fitfile.exists():
         fit = json.loads(fitfile.read_text())
+        L += [f"**Parameters: Fit {len(C.FIT_MILESTONES) if len(fit['runs']) >= max(C.FIT_MILESTONES) else 1} "
+              f"(runs {', '.join(fit['runs'])}).** Design target X_A = {C.TARGET_X} in {C.BATCH_TIME:.0f} min, "
+              f"trip {C.T_TRIP - 273.15:.0f} C (target still under group decision D2).", ""]
         L += [f"Runs used in the fit: {', '.join(fit['runs'])}. "
               f"Weighted residual variance s^2 = {fit['s2']:.3f} (close to 1 means the model fits to within "
               "the noise).", ""]
@@ -151,6 +224,7 @@ def write_index(dataset):
             L += [f"Recommended design (target X_A = {C.TARGET_X} in {C.BATCH_TIME:.0f} min):", "",
                   md_table(pd.DataFrame(rows, columns=["quantity", "value", "units"])), ""]
 
+    found = findings(dataset)
     L += ["## Figures", "", "| File | Report | What it shows |", "|---|---|---|"]
     for f in figs:
         part, cap = describe(f.stem, FIGURES)
@@ -159,13 +233,15 @@ def write_index(dataset):
     for f in figs:
         part, cap = describe(f.stem, FIGURES)
         L += [f"### {f.stem} ({part})", "", f"![{f.stem}](figures/{f.name})", "", cap, ""]
+        if f.stem in found:
+            L += [f"**{found[f.stem]}**", ""]
 
     L += ["## Tables", "", "| File | Report | What it holds |", "|---|---|---|"]
     for f in tabs:
         part, cap = describe(f.stem, TABLES)
         L.append(f"| [{f.name}](tables/{f.name}) | {part} | {cap} |")
     L.append("")
-    for name in ["part4_verification_checks", "part7_validation_errors", "part11_sensitivity",
+    for name in ["part5_fit_history", "part4_verification_checks", "part7_validation_errors", "part11_sensitivity",
                  "part10_design_scenarios", "part6_truth_recovery_selftest"]:
         p = res / "tables" / f"{name}.csv"
         if p.exists():

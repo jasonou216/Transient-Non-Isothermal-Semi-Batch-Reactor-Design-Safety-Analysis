@@ -66,6 +66,7 @@ Every figure and table, with a caption and the report section it belongs to, is 
 │   ├── design_optimization.py  design search, sensitivity, Monte Carlo
 │   ├── design_scenarios.py     how the design changes with target and batch time
 │   ├── results_workbook.py     Excel workbook of every run with live formulas
+│   ├── results_pack.py         one document with every figure and table (Word / Google Doc)
 │   ├── synthetic_data.py       invented data with known parameters (self-test)
 │   ├── run_pipeline.py         runs every step and writes results/README.md
 │   └── common.py               data loading, reactor builders, file paths
