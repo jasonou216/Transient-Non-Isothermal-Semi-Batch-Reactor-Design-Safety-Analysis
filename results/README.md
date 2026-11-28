@@ -138,6 +138,7 @@ Monte Carlo over the fitted-parameter uncertainty: spread of conversion and MTSR
 | [part10_design_scenarios.csv](tables/part10_design_scenarios.csv) | Part 10 | Recommended design for other conversion targets and batch times. |
 | [part10_design_summary.json](tables/part10_design_summary.json) | Part 10 | Table 7: the recommended design. |
 | [part10_recommended_cooling_failure.csv](tables/part10_recommended_cooling_failure.csv) | Part 10 | Cooling-failure scan for the recommended design. |
+| [part10_scenario_robustness.csv](tables/part10_scenario_robustness.csv) | Part 10, 11 | Each candidate design (95 %/240, 92 %/240, 95 %/360) held fixed under E_a +/- 10 % and plant UA - 20 %. |
 | [part10_trip_sweep.csv](tables/part10_trip_sweep.csv) | Part 10, 12 | Trip setting against nuisance trips and the worst cooling-failure peak, for three candidate designs. |
 | [part11_sensitivity.csv](tables/part11_sensitivity.csv) | Part 11 | Effect of Ea +/- 10 % and UA - 20 % on the recommended design. |
 | [part4_verification_checks.csv](tables/part4_verification_checks.csv) | Part 4 | Table 3: verification checks (conservation, analytic limits, tolerance convergence, MTSR consistency). |
@@ -196,10 +197,10 @@ Monte Carlo over the fitted-parameter uncertainty: spread of conversion and MTSR
 
 ### part10_design_scenarios
 
-|   target_X |   batch_min | meets_target   | policy   |   t_feed_min |   Tc_C |   UA_W_K |    X_A |   T_peak_C |   MTSR_max_C |   margin_K |   P_unsafe |   MTSR_p95_C |   X_A_p05 |
-|-----------:|------------:|:---------------|:---------|-------------:|-------:|---------:|-------:|-----------:|-------------:|-----------:|-----------:|-------------:|----------:|
-|       0.95 |         240 | True           | constant |       124.9  |     60 |    672.2 | 0.9503 |      72.28 |        80.66 |      12.72 |          0 |        80.83 |    0.95   |
-|       0.92 |         240 | True           | staged   |        98.68 |     50 |    672.2 | 0.928  |      65.76 |        74.66 |      19.24 |          0 |        74.84 |    0.9278 |
-|       0.9  |         240 | True           | constant |       158    |     50 |    672.2 | 0.9023 |      60.65 |        71.62 |      23.38 |          0 |        71.79 |    0.9019 |
-|       0.95 |         300 | True           | constant |       158    |     60 |    672.2 | 0.9549 |      70.27 |        78.02 |      14.73 |          0 |        78.17 |    0.9547 |
-|       0.95 |         360 | True           | constant |        98.68 |     50 |    672.2 | 0.9501 |      65.07 |        77.73 |      17.27 |          0 |        77.94 |    0.9499 |
+|   target_X |   batch_min | meets_target   | policy   |   t_feed_min |   Tc_C |   UA_W_K |    X_A |   T_peak_C |   MTSR_max_C |   margin_K |   P_unsafe |   MTSR_p95_C |   X_A_p05 |   P_below_target |
+|-----------:|------------:|:---------------|:---------|-------------:|-------:|---------:|-------:|-----------:|-------------:|-----------:|-----------:|-------------:|----------:|-----------------:|
+|       0.95 |         240 | True           | constant |       124.9  |     60 |    672.2 | 0.9503 |      72.28 |        80.66 |      12.72 |          0 |        80.83 |    0.95   |            0.035 |
+|       0.92 |         240 | True           | staged   |        98.68 |     50 |    672.2 | 0.928  |      65.76 |        74.66 |      19.24 |          0 |        74.84 |    0.9278 |            0     |
+|       0.9  |         240 | True           | constant |       158    |     50 |    672.2 | 0.9023 |      60.65 |        71.62 |      23.38 |          0 |        71.79 |    0.9019 |            0     |
+|       0.95 |         300 | True           | constant |       158    |     60 |    672.2 | 0.9549 |      70.27 |        78.02 |      14.73 |          0 |        78.17 |    0.9547 |            0     |
+|       0.95 |         360 | True           | constant |        98.68 |     50 |    672.2 | 0.9501 |      65.07 |        77.73 |      17.27 |          0 |        77.94 |    0.9499 |            0.255 |

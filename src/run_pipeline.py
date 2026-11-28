@@ -100,6 +100,8 @@ TABLES = {
     "part10_recommended_cooling_failure": ("Part 10", "Cooling-failure scan for the recommended design."),
     "part10_design_summary": ("Part 10", "Table 7: the recommended design."),
     "part10_design_scenarios": ("Part 10", "Recommended design for other conversion targets and batch times."),
+    "part10_scenario_robustness": ("Part 10, 11", "Each candidate design (95 %/240, 92 %/240, 95 %/360) held fixed "
+                                   "under E_a +/- 10 % and plant UA - 20 %."),
     "part10_trip_sweep": ("Part 10, 12", "Trip setting against nuisance trips and the worst cooling-failure peak, "
                           "for three candidate designs."),
     "part11_sensitivity": ("Part 11", "Effect of Ea +/- 10 % and UA - 20 % on the recommended design."),
