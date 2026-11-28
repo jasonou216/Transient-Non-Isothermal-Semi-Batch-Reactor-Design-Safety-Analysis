@@ -1,6 +1,6 @@
 # Design decisions
 
-Every engineering choice in this project, in one list. Ensured no AI involvement with decision making. Each entry gives the value, where it is set
+Every engineering choice in this project, in one list. All engineering decisions were made by the group. AI tools were used to generate supporting calculations and to challenge the reasoning; outputs used in the report were reviewed before adoption. Each entry gives the value, where it is set
 in the code, why it was chosen, and its status. Settled decisions are justified in the report
 section listed. Open decisions wait on more data.
 
