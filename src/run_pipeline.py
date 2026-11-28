@@ -79,6 +79,8 @@ FIGURES = {
 TABLES = {
     "part4_verification_checks": ("Part 4", "Table 3: verification checks (conservation, analytic limits, "
                                   "tolerance convergence, MTSR consistency)."),
+    "appendixE_worked_examples_fit1": ("Appendix E", "Frozen copy of the hand-calculation numbers made with the Fit 1 "
+                                       "(Run 1 only) parameters, which Appendix E quotes."),
     "appendixE_worked_examples": ("Appendix E", "Numbers used in the hand calculations."),
     "part5_candidates_after_": ("Part 5", "Every candidate next run, ranked by information gain, after "
                                 "the safety screen."),
@@ -95,6 +97,8 @@ TABLES = {
     "part10_recommended_cooling_failure": ("Part 10", "Cooling-failure scan for the recommended design."),
     "part10_design_summary": ("Part 10", "Table 7: the recommended design."),
     "part10_design_scenarios": ("Part 10", "Recommended design for other conversion targets and batch times."),
+    "part10_trip_sweep": ("Part 10, 12", "Trip setting against nuisance trips and the worst cooling-failure peak, "
+                          "for three candidate designs."),
     "part11_sensitivity": ("Part 11", "Effect of Ea +/- 10 % and UA - 20 % on the recommended design."),
     "ENCH421_Results_by_Run": ("Appendix C", "Workbook: every run with its calculations and charts."),
 }

@@ -17,28 +17,29 @@ in. The work answers four questions:
 4. **Design (Parts 10–12).** Which feed policy, coolant temperature and jacket UA reach the target
    conversion safely, and how robust is that choice to uncertain parameters?
 
-## Status (Nov 27)
+## Status (Nov 28)
 
 | Stage | State |
 |---|---|
 | Model, solver and verification | Done. All 16 verification checks pass (`results/tables/part4_verification_checks.csv`). |
 | Pipeline self-test on synthetic data | Done. True parameters recovered inside the 95 % confidence intervals. |
-| Bench experiments | **Run 1 of 5 received.** Runs 2 and 3 requested. |
-| Parameter fit | Preliminary (Run 1 only). |
+| Bench experiments | **Runs 1–3 received.** The stopping rule now says stop; the group decides whether to use Runs 4–5. |
+| Parameter fit | Fit 2 (Runs 1–3). |
 | Validation run | Not yet released. |
-| Plant, safety and design results | Computed with the preliminary fit; will be rerun after the final fit. |
-| Report | In progress: Parts 3–5 drafted. |
+| Plant, safety and design results | Computed with Fit 2. The target conversion, batch time and trip setting are still being decided. |
+| Report | In progress. |
 
-### Preliminary results (Run 1 only; will change)
+### Current results (Fit 2, Runs 1–3)
 
-| Quantity | Value | Comment |
+| Quantity | Value | Source |
 |---|---|---|
-| k_ref at 300 K | 0.00655 L/(mol·min), ±0.9 % | well determined by one run |
-| E_a | 47 kJ/mol, ±47 % | **poorly determined**: Run 1 is nearly isothermal, so it says little about how k changes with T. Runs 2–3 at 60 °C fix this. |
-| ΔH_rxn | −84 kJ/mol, ±3.4 % | well determined from the temperature rise |
-| Fit quality | s² = 1.00 | the model fits Run 1 to within the measurement noise |
-| Recommended design (X_A ≥ 0.95 in 240 min) | staged feed over 99 min, coolant 50 °C, UA 168 W/K | peak 81 °C, worst-case MTSR 91 °C, only 3.8 K below the 95 °C failure limit |
-| Main finding so far | The conversion target, not the jacket size, sets the safety margin. | MTSR assumes cooling is lost, so a bigger jacket cannot lower it. A 92 % target gives a 13 K margin (`results/tables/part10_design_scenarios.csv`). |
+| k_ref at 315 K | 0.01964 L/(mol·min), ±0.6 % | `results/tables/part6_fitted_parameters.csv` |
+| E_a | 57.7 kJ/mol, ±0.5 % (Fit 1 was 47 ± 22 kJ/mol) | same |
+| ΔH_rxn | −83.6 kJ/mol, ±0.8 % | same |
+| Fit quality | s² = 1.002, no residual trend in any run | `data/processed/fitted_parameters.json` |
+| Max safe feed rate (MTSR criterion) | 12.5 L/min | `results/tables/part9_safety_summary.json` |
+| Design for X_A ≥ 0.95 in 240 min | staged feed over 125 min, coolant 40 °C; peak 71.2 °C, MTSR 80.3 °C | `results/tables/part10_design_summary.json` |
+| Other targets and batch times | see the scenario table and the trip-setting sweep | `part10_design_scenarios.csv`, `part10_trip_sweep.csv` |
 
 Every figure and table, with a caption and the report section it belongs to, is listed in
 **[results/README.md](results/README.md)**.

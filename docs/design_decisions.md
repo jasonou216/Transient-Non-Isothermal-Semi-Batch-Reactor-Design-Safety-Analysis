@@ -42,7 +42,7 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | E3 | Runs requested in pairs, 150 samples, 150 min | | planner defaults | TA approved pairs with one-day turnaround. Five single runs could not finish before the deadline. | Settled |
 | E4 | Run 3 moved from 333 K to 315 K | | request email | Planner's top pair had both runs at 333 K. A third temperature tests the Arrhenius form, at a small cost in predicted E_a precision (SE 0.13 instead of 0.11 kJ/mol). | Settled (deliberate override) |
 | E5 | Stopping rule | Fit adequate (s² 0.8–1.25, no residual trend), then stop when every 95 % CI is within ±5 % or the best next run cuts the worst SE by < 10 %; otherwise use the 5-run budget | `STOP_*` | Stops when more data would not change the design. | Settled |
-| E6 | Runs 4 and 5 | separately or as a pair | | Depends on how much Runs 2–3 narrow E_a. | TBD: decide after the Runs 2–3 fit |
+| E6 | Runs 4 and 5 | separately or as a pair | | Depends on how much Runs 2–3 narrow E_a. | Stopping rule after Fit 2 says stop (all 95 % CIs within ±1 %). Student decision pending |
 
 ## 5. Safety criterion (report Part 9)
 

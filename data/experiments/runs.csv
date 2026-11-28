@@ -2,3 +2,5 @@
 # T_feed_K blank = default 298.15 K.
 run_id,file,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,T_feed_K,notes
 R1,G33_run_20261126_140647.csv,298.15,0.05,20,298.15,150,,baseline: stoichiometric B (1.0 L) over 20 min at 25 C
+R2,G33_run_20261127_180129.csv,333.15,0.08,12.5,333.15,150,298.15,high temperature (60 C) for Ea: stoichiometric B (1.0 L) over 12.5 min
+R3,G33_run_20261127_180202.csv,315.15,0.08,18.75,315.15,150,298.15,third temperature (42 C) for Arrhenius check: 1.5 eq B (1.5 L) over 18.75 min

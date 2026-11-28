@@ -3,26 +3,53 @@ conversion target and the batch time.
 
 For each (target, batch time) the design grid is searched with the same selection rule as
 design_optimization.py (smallest UA reaching the target, then largest safety margin), and the chosen design
-is checked against fitted-parameter uncertainty by Monte Carlo.
+is checked against fitted-parameter uncertainty by Monte Carlo. For three of the designs it also
+sweeps the high-temperature trip setting (part10_trip_sweep.csv): for each trip, does the normal
+batch trip by itself (nuisance trip), and how hot does the worst cooling failure get when the
+trip cuts the B feed?
 
     python src/design_scenarios.py --dataset real
 """
 import argparse
 
+import numpy as np
 import pandas as pd
 
 import config as C
 import design_optimization as design
 from common import load_fit, sample_kinetics, table_path
+from semi_batch_model import metrics, simulate
 
 SCENARIOS = [(0.95, 240.0), (0.92, 240.0), (0.90, 240.0), (0.95, 300.0), (0.95, 360.0)]
 N_MC = 200
+TRIP_SWEEP_CASES = [(0.95, 240.0), (0.92, 240.0), (0.95, 360.0)]
+TRIPS_C = [70, 75, 80, 85, 88, 90]
+
+
+def trip_sweep(kin, d, batch, n_fail=25):
+    """Worst cooling failure (UA -> 0 at every failure time during the feed) for each trip setting."""
+    rx = design.reactor_for(d)
+    m = metrics(simulate(rx, kin, batch, n=600))
+    t_feed_end = max(b for _, b, _ in rx.feed)
+    rows = []
+    for trip_C in TRIPS_C:
+        trip = trip_C + 273.15
+        worst = None
+        for tf in np.linspace(0.0, t_feed_end, n_fail):
+            after = simulate(rx.with_(t_fail=tf, T_trip=trip), kin, tf + 600.0, n=1200)
+            after = after[after.t >= tf]
+            if worst is None or after["T"].max() > worst["T"].max():
+                worst = after
+        rows.append(dict(normal_peak_C=m["T_max"] - 273.15, MTSR_max_C=m["MTSR_max"] - 273.15, trip_C=trip_C,
+                         nuisance_trip=bool(m["T_max"] >= trip), worst_failure_peak_C=worst["T"].max() - 273.15,
+                         max_heating_rate_K_min=worst.dTdt.max()))
+    return rows
 
 
 def main(dataset):
     kin, theta, cov, _ = load_fit(dataset)
     UA0 = C.ua_scaled(C.FULL["V0"] + design.full_V_B())
-    grids, rows = {}, []
+    grids, rows, sweep = {}, [], []
     samples = sample_kinetics(theta, cov, kin.T_ref, N_MC, seed=1)
     for target, batch in SCENARIOS:
         C.TARGET_X, C.BATCH_TIME = target, batch
@@ -40,9 +67,16 @@ def main(dataset):
                          P_unsafe=1 - mc.safe.mean(), MTSR_p95_C=mc.MTSR_max.quantile(0.95) - 273.15,
                          X_A_p05=mc.XA_end.quantile(0.05)))
         print(rows[-1])
+        if (target, batch) in TRIP_SWEEP_CASES:
+            for r in trip_sweep(kin, d, batch):
+                sweep.append(dict(target_X=target, batch_min=batch, policy=d["policy"], t_feed_min=d["t_feed"],
+                                  Tc_C=d["Tc"] - 273.15, **r))
     table = pd.DataFrame(rows)
     table.to_csv(table_path(dataset, "part10_design_scenarios"), index=False)
     print(table.round(3).to_string(index=False))
+    sweep = pd.DataFrame(sweep)
+    sweep.to_csv(table_path(dataset, "part10_trip_sweep"), index=False)
+    print(sweep.round(2).to_string(index=False))
 
 
 if __name__ == "__main__":

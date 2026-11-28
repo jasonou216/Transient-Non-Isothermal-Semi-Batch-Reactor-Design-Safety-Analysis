@@ -1,0 +1,3 @@
+request,T0_K,feed_flow_Lmin,feed_duration_min,T_coolant_K,t_final_min,eq_B,pred_T_max_K,T_max_worst_Ea_K,pred_X_end,info_gain,se_Ea_after,se_dH_after
+next #1,333.15,0.08,12.5,333.15,150.0,1.0,344.2,344.2,0.934,1.011259658475371,0.11901120432806565,0.2790683433562447
+next #2,293.15,0.08,18.8,293.15,150.0,1.5,295.6,295.6,0.555,0.8342773526669482,0.11554036682321231,0.34055799492758837

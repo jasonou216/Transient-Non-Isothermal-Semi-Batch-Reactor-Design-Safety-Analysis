@@ -1,17 +1,17 @@
 check,case,value,tolerance,units,passed
-N_A + N_C = N_A0,bench,8.881784197001252e-16,1e-06,relative,True
-N_B + N_C = B fed,bench,1.5543122344752192e-15,1e-06,relative,True
-V = V0 + volume fed,bench,1.0547118733938987e-15,1e-06,relative,True
-adiabatic energy balance,bench,5.21711729811511e-10,1e-06,relative,True
-isothermal post-feed analytic C_A,bench,3.624645028565965e-10,1e-05,relative,True
-tolerance convergence: T,bench,0.00015725233146213213,0.01,K,True
-tolerance convergence: X_A,bench,1.5593817704884216e-06,0.0001,-,True
-adiabatic failure T_final = MTSR,bench,-2.867011517082574e-09,0.05,K,True
-N_A + N_C = N_A0,full scale,7.579122514774402e-16,1e-06,relative,True
+N_A + N_C = N_A0,bench,4.440892098500626e-16,1e-06,relative,True
+N_B + N_C = B fed,bench,1.177982156264079e-10,1e-06,relative,True
+V = V0 + volume fed,bench,5.889844167938918e-11,1e-06,relative,True
+adiabatic energy balance,bench,5.325767637639457e-10,1e-06,relative,True
+isothermal post-feed analytic C_A,bench,1.9625756575436526e-10,1e-05,relative,True
+tolerance convergence: T,bench,0.00010422086046446566,0.01,K,True
+tolerance convergence: X_A,bench,5.325845419124065e-07,0.0001,-,True
+adiabatic failure T_final = MTSR,bench,-2.134036662937433e-07,0.05,K,True
+N_A + N_C = N_A0,full scale,1.3263464400855204e-15,1e-06,relative,True
 N_B + N_C = B fed,full scale,9.473903143468002e-16,1e-06,relative,True
-V = V0 + volume fed,full scale,2.0842586915629606e-15,1e-06,relative,True
-adiabatic energy balance,full scale,1.1174546355209648e-10,1e-06,relative,True
-isothermal post-feed analytic C_A,full scale,6.920449768799131e-10,1e-05,relative,True
-tolerance convergence: T,full scale,0.000149497109987351,0.01,K,True
-tolerance convergence: X_A,full scale,1.4779657705465965e-06,0.0001,-,True
-adiabatic failure T_final = MTSR,full scale,-7.10586505192623e-08,0.05,K,True
+V = V0 + volume fed,full scale,2.1789977229976404e-15,1e-06,relative,True
+adiabatic energy balance,full scale,4.804457331628178e-11,1e-06,relative,True
+isothermal post-feed analytic C_A,full scale,6.611958203173174e-10,1e-05,relative,True
+tolerance convergence: T,full scale,0.00012543477936333147,0.01,K,True
+tolerance convergence: X_A,full scale,1.4252684309434827e-06,0.0001,-,True
+adiabatic failure T_final = MTSR,full scale,-8.648328275739914e-09,0.05,K,True
