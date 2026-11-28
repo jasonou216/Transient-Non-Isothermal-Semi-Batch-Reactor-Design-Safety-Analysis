@@ -64,7 +64,8 @@ NOMINAL = dict(      # Part A nominal full-scale case.  DECISION
     UA_factor=1.0,   # x ua_scaled()
 )
 BATCH_TIME = 240.0   # min, fixed batch time for the conversion objective.  DECISION
-TARGET_X = 0.95      # target conversion of A at BATCH_TIME.  DECISION
+TARGET_X = 0.92      # target conversion of A at BATCH_TIME.  DECISION D2 (28 Nov local): 92 % chosen over 95 %
+                     #    for operating robustness: 9.2 K alarm-to-trip room vs 2.7 K, 0 % vs 3.5 % below target.
 
 # ---------------------------------------------------------------------------
 # Safety criterion (Part C).  DECISION - state these explicitly in the report.

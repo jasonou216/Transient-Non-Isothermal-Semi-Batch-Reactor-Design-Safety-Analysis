@@ -26,7 +26,7 @@ in. The work answers four questions:
 | Bench experiments | **Runs 1–3 received.** The stopping rule now says stop; the group decides whether to use Runs 4–5. |
 | Parameter fit | Fit 2 (Runs 1–3). |
 | Validation run | Not yet released. |
-| Plant, safety and design results | Computed with Fit 2. The target conversion, batch time and trip setting are still being decided. |
+| Plant, safety and design results | Computed with Fit 2. Decided: 92 % in 240 min, installed jacket, 80 °C feed trip. Alarm setpoint still open. |
 | Report | In progress. |
 
 ### Current results (Fit 2, Runs 1–3)
@@ -38,7 +38,7 @@ in. The work answers four questions:
 | ΔH_rxn | −83.6 kJ/mol, ±0.8 % | same |
 | Fit quality | s² = 1.002, no residual trend in any run | `data/processed/fitted_parameters.json` |
 | Max safe feed rate (MTSR criterion) | 12.5 L/min | `results/tables/part9_safety_summary.json` |
-| Design for X_A ≥ 0.95 in 240 min | staged feed over 125 min, coolant 40 °C; peak 71.2 °C, MTSR 80.3 °C | `results/tables/part10_design_summary.json` |
+| Recommended design (X_A ≥ 0.92 in 240 min, 672 W/K jacket) | staged feed over 99 min, coolant 50 °C; X_A 0.928, peak 65.8 °C, MTSR 74.7 °C | `results/tables/part10_design_summary.json` |
 | Other targets and batch times | see the scenario table and the trip-setting sweep | `part10_design_scenarios.csv`, `part10_trip_sweep.csv` |
 
 Every figure and table, with a caption and the report section it belongs to, is listed in

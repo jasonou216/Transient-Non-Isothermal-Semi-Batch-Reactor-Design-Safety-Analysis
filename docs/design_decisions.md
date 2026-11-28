@@ -67,7 +67,7 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | # | Decision | Value | Set in | Reason | Status |
 |---|---|---|---|---|---|
 | P1 | Batch time | 240 min | `BATCH_TIME` | 360 min rejected: about a third less throughput for margins similar to 92 % / 240 min. | Settled 27 Nov (local) |
-| P2 | Target conversion of A | 0.95 in config; group leaning 0.92 | `TARGET_X` | Fit 2: both 95 % and 92 % at 240 min are safe with 0 % Monte Carlo risk; 92 % gives more margin for uncertainty the Monte Carlo does not sample, at about 2 % less product. | Open: 92 % ranked first, final choice deferred |
+| P2 | Target conversion of A | 0.92 | `TARGET_X` | Operating robustness at the installed jacket: 9.2 K alarm-to-trip room vs 2.7 K at 95 %, 0 % vs 3.5 % probability below target, conversion spare 0.008 vs 0.0003; cost 2.4 % less product per batch, same throughput (`part10_design_scenarios.csv`, `part10_trip_sweep.csv`, `part10_scenario_robustness.csv`). | Settled 28 Nov (local) |
 | P3 | Selection rule | installed jacket (672 W/K), then the largest safety margin | `config.UA_SELECTION`, `design_optimization.pick()` | Designing at the jacket that would exist avoids a design that only works with deliberately restricted cooling. | Settled 27 Nov (local), replaces "smallest UA" |
 | P4 | Feed policies searched | constant rate; two-stage (fast then slow) | `design_optimization.py` | A staged feed lets B react early while the reactor is cool, limiting accumulation. | Settled |
 | P5 | Robustness tests | E_a ±10 %, UA −20 %, Monte Carlo over the parameter covariance | `design_optimization.py` | Required by the brief; the Monte Carlo uses the actual fitted uncertainty. | Settled |
