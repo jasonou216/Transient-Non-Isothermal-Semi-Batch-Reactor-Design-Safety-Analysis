@@ -77,7 +77,14 @@ TARGET_X = 0.95      # target conversion of A at BATCH_TIME.  DECISION
 # ---------------------------------------------------------------------------
 MARGIN_NORMAL = 15.0   # K
 MARGIN_FAILURE = 5.0   # K
-T_TRIP = 343.15        # K, high-temperature interlock that cuts the B feed (Part D)
+T_TRIP = 353.15        # K (80 C), high-temperature trip that cuts the B feed.  DECISION D1 (27 Nov local):
+                       #    worst cooling-failure peak stays well below 95 C, clear of the 85 C region.
+                       #    The alarm setpoint waits on D2 (rule: at least ~5 K above the normal peak).
+
+# DECISION D4 (27 Nov local): design at the jacket that would be installed (ua_scaled(), 672 W/K),
+# then the largest margin. "smallest" restores the earlier rule (smallest UA reaching the target).
+UA_SELECTION = "installed"
+UA_INSTALLED_FACTOR = 1.0
 
 # Experimental design (Part 5).  DECISION - stated in the report.
 PLAN_T_MAX = T_LIMIT - 20.0  # K, safety screen: send a run only if predicted T_max <= 80 C

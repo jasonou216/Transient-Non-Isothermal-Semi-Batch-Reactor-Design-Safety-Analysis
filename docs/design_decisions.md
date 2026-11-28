@@ -42,7 +42,7 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | E3 | Runs requested in pairs, 150 samples, 150 min | | planner defaults | TA approved pairs with one-day turnaround. Five single runs could not finish before the deadline. | Settled |
 | E4 | Run 3 moved from 333 K to 315 K | | request email | Planner's top pair had both runs at 333 K. A third temperature tests the Arrhenius form, at a small cost in predicted E_a precision (SE 0.13 instead of 0.11 kJ/mol). | Settled (deliberate override) |
 | E5 | Stopping rule | Fit adequate (s² 0.8–1.25, no residual trend), then stop when every 95 % CI is within ±5 % or the best next run cuts the worst SE by < 10 %; otherwise use the 5-run budget | `STOP_*` | Stops when more data would not change the design. | Settled |
-| E6 | Runs 4 and 5 | separately or as a pair | | Depends on how much Runs 2–3 narrow E_a. | Stopping rule after Fit 2 says stop (all 95 % CIs within ±1 %). Student decision pending |
+| E6 | Runs 4 and 5 | stop at 3 runs | | Stopping rule after Fit 2 met: s² = 1.002, all 95 % CIs within ±1 %; more runs would not change a design number. | Settled 27 Nov (local) |
 
 ## 5. Safety criterion (report Part 9)
 
@@ -52,15 +52,23 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | S2 | Normal-operation margin | T_max ≤ 85 °C (15 K) | `MARGIN_NORMAL` | Room for disturbances and control overshoot. | Settled |
 | S3 | Cooling-failure margin | MTSR ≤ 95 °C (5 K) | `MARGIN_FAILURE` | MTSR is already a worst case (all unreacted B reacts adiabatically), so a smaller margin is used. | Settled |
 | S4 | Criticality assessment | Stoessel classes from MTSR, MTT and TD24 | report | Industry-standard thermal risk classification. | Settled |
-| S5 | High-temperature interlock trip | 70 °C | `T_TRIP` | Cuts the feed so no more B accumulates. **Conflict:** the current recommended design peaks at 81 °C in normal operation, above the trip. | Leaning (Run 1 fit): rule Normal peak + margin < alarm < trip < limit − margin, with margins from instrument uncertainty, operator response time, process variability and worst-case upset. For 92 %/240 min: trip about 80 °C (worst failure peak 89.9 °C), alarm about 75 °C. Recheck after Fit 2 |
+| S5 | High-temperature trip | 80 °C, cuts the B feed | `T_TRIP` | Keeps the worst cooling-failure peak about 6.5 K below the 95 °C failure limit (`part10_trip_sweep.csv`) and stays clear of the 85 °C region. Alarm at least ~5 K above the normal peak; value set with P2. | Trip settled 27 Nov (local); alarm open |
+
+## 5a. Margin definitions (ledger decision D3, settled 27 Nov local)
+
+| Name | Definition | Example (95 %, 240 min, installed jacket) |
+|---|---|---|
+| Normal margin | 85 °C normal-operation limit − normal peak temperature | 12.7 K |
+| Failure margin | 95 °C failure limit − worst-case temperature after a cooling failure | 14.3 K using MTSR (open: MTSR or the simulated failure peak) |
+| 100 °C margin | 100 °C process limit − normal peak temperature | 27.7 K |
 
 ## 6. Design objective and selection rule (report Part 10)
 
 | # | Decision | Value | Set in | Reason | Status |
 |---|---|---|---|---|---|
-| P1 | Batch time | 240 min | `BATCH_TIME` | Kept at 240 min: a 360 min batch costs about a third of capacity (less once turnaround time is counted) and may need a second reactor. | Leaning (Run 1 fit) |
-| P2 | Target conversion of A | 0.95 | `TARGET_X` | Placeholder. At 0.95 the MTSR margin is only 3.8 K. At 0.92 it is 13 K (`part10_design_scenarios.csv`). | Leaning 0.92 (Run 1 fit): no lost throughput, no new equipment, and the only option with a workable alarm-trip window. Cost: about 3 % less product per batch, plus recycle or separation of unreacted A. Recheck after Fit 2 |
-| P3 | Selection rule | smallest UA that is safe and meets the target, then the largest safety margin | `design_optimization.pick()` | The cheapest jacket that does the job, then the most robust option among equals. | Settled |
+| P1 | Batch time | 240 min | `BATCH_TIME` | 360 min rejected: about a third less throughput for margins similar to 92 % / 240 min. | Settled 27 Nov (local) |
+| P2 | Target conversion of A | 0.95 in config; group leaning 0.92 | `TARGET_X` | Fit 2: both 95 % and 92 % at 240 min are safe with 0 % Monte Carlo risk; 92 % gives more margin for uncertainty the Monte Carlo does not sample, at about 2 % less product. | Open: 92 % ranked first, final choice deferred |
+| P3 | Selection rule | installed jacket (672 W/K), then the largest safety margin | `config.UA_SELECTION`, `design_optimization.pick()` | Designing at the jacket that would exist avoids a design that only works with deliberately restricted cooling. | Settled 27 Nov (local), replaces "smallest UA" |
 | P4 | Feed policies searched | constant rate; two-stage (fast then slow) | `design_optimization.py` | A staged feed lets B react early while the reactor is cool, limiting accumulation. | Settled |
 | P5 | Robustness tests | E_a ±10 %, UA −20 %, Monte Carlo over the parameter covariance | `design_optimization.py` | Required by the brief; the Monte Carlo uses the actual fitted uncertainty. | Settled |
 

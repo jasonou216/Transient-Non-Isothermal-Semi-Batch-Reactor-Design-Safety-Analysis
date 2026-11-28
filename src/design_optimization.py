@@ -2,9 +2,11 @@
 
  1. Grid search: maximise X_A at BATCH_TIME subject to the safety criterion (config.py),
     over feed policy (constant vs two-stage), coolant/charge temperature and UA.
- 2. Required UA = smallest UA whose best safe design reaches TARGET_X. Among the designs
-    that reach the target at that UA, pick the one with the LARGEST safety margin
-    (min of the two criterion margins) - conversion is flat near X = 1, margin is not.
+ 2. Selection (config.UA_SELECTION). "installed": among the safe designs that reach TARGET_X with
+    the installed jacket (UA_INSTALLED_FACTOR x ua_scaled()), pick the LARGEST safety margin (min of
+    the two criterion margins). "smallest": the smallest UA whose best safe design reaches TARGET_X,
+    then the largest margin at that UA. The grid over UA is still searched and reported
+    (part10_best_design_per_UA.csv) to show how the design depends on jacket size.
  3. Recommended design checked against cooling failure (with / without high-T interlock).
  4. Sensitivity: Ea +/-10 % (k_ref at T_ref held fixed) and plant UA 20 % below assumed:
     (i) recommended design as-is, (ii) re-optimised design.
@@ -69,15 +71,21 @@ def best_per_ua(grid):
 
 
 def pick(grid):
-    """Smallest UA reaching TARGET_X; at that UA the target-meeting design with the largest margin."""
+    """Target-meeting safe design with the largest margin, at the installed UA or the smallest UA."""
     s = grid[grid.safe]
     if s.empty:
         return grid.loc[grid.margin_K.idxmax()], False
     ok = s[s.XA_end >= C.TARGET_X]
     if ok.empty:
         return s.loc[s.XA_end.idxmax()], False
-    ua = ok.UA_factor.min()
-    return ok[ok.UA_factor == ua].sort_values("margin_K", ascending=False).iloc[0], True
+    if C.UA_SELECTION == "installed":
+        ok = ok[np.isclose(ok.UA_factor, C.UA_INSTALLED_FACTOR)]
+        if ok.empty:
+            at = s[np.isclose(s.UA_factor, C.UA_INSTALLED_FACTOR)]
+            return (at.loc[at.XA_end.idxmax()] if len(at) else s.loc[s.XA_end.idxmax()]), False
+    else:
+        ok = ok[ok.UA_factor == ok.UA_factor.min()]
+    return ok.sort_values("margin_K", ascending=False).iloc[0], True
 
 
 def main(dataset):

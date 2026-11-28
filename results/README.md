@@ -14,16 +14,16 @@ Runs used in the fit: R1, R2, R3. Weighted residual variance s^2 = 1.002 (close 
 
 Recommended design (target X_A = 0.95 in 240 min):
 
-| quantity                    | value   | units   |
-|:----------------------------|:--------|:--------|
-| Feed policy                 | staged  |         |
-| Feed time                   | 125     | min     |
-| Coolant temperature         | 40      | C       |
-| Jacket UA                   | 168     | W/K     |
-| Conversion at end of batch  | 0.953   | -       |
-| Peak temperature            | 71.2    | C       |
-| Highest MTSR                | 80.3    | C       |
-| Margin to the failure limit | 13.8    | K       |
+| quantity                    | value    | units   |
+|:----------------------------|:---------|:--------|
+| Feed policy                 | constant |         |
+| Feed time                   | 125      | min     |
+| Coolant temperature         | 60       | C       |
+| Jacket UA                   | 672      | W/K     |
+| Conversion at end of batch  | 0.950    | -       |
+| Peak temperature            | 72.3     | C       |
+| Highest MTSR                | 80.7     | C       |
+| Margin to the failure limit | 12.7     | K       |
 
 ## Figures
 
@@ -113,6 +113,7 @@ Monte Carlo over the fitted-parameter uncertainty: spread of conversion and MTSR
 |---|---|---|
 | [ENCH421_Results_by_Run.xlsx](tables/ENCH421_Results_by_Run.xlsx) | Appendix C | Workbook: every run with its calculations and charts. |
 | [appendixE_worked_examples.json](tables/appendixE_worked_examples.json) | Appendix E | Numbers used in the hand calculations. |
+| [appendixE_worked_examples_fit1.json](tables/appendixE_worked_examples_fit1.json) | Appendix E | Frozen copy of the hand-calculation numbers made with the Fit 1 (Run 1 only) parameters, which Appendix E quotes. |
 | [part10_best_design_per_UA.csv](tables/part10_best_design_per_UA.csv) | Part 10 | Best design found at each jacket UA. |
 | [part10_design_scenarios.csv](tables/part10_design_scenarios.csv) | Part 10 | Recommended design for other conversion targets and batch times. |
 | [part10_design_summary.json](tables/part10_design_summary.json) | Part 10 | Table 7: the recommended design. |
@@ -156,17 +157,17 @@ Monte Carlo over the fitted-parameter uncertainty: spread of conversion and MTSR
 
 | case          |   fixed_XA |   fixed_Tmax |   fixed_MTSR |   fixed_margin_K | fixed_safe   | reopt_policy   |   reopt_t_feed |   reopt_Tc |   reopt_UA_W_K |   reopt_XA | reopt_meets_target   |
 |:--------------|-----------:|-------------:|-------------:|-----------------:|:-------------|:---------------|---------------:|-----------:|---------------:|-----------:|:---------------------|
-| base          |     0.9525 |        344.3 |        353.4 |            13.85 | True         | staged         |         124.9  |      313.1 |          168.1 |     0.9525 | True                 |
-| Ea -10%       |     0.9447 |        343.6 |        354   |            14.19 | True         | staged         |          98.68 |      313.1 |          168.1 |     0.9545 | True                 |
-| Ea +10%       |     0.9592 |        344.9 |        352.9 |            13.24 | True         | staged         |          98.68 |      303.1 |          168.1 |     0.9508 | True                 |
-| plant UA -20% |     0.9607 |        347.5 |        355.9 |            10.69 | True         | staged         |          98.68 |      303.1 |          134.4 |     0.951  | True                 |
+| base          |     0.9503 |        345.4 |        353.8 |            12.72 | True         | constant       |         124.9  |      333.1 |          672.2 |     0.9503 | True                 |
+| Ea -10%       |     0.9431 |        345.2 |        354.7 |            12.95 | True         | constant       |          98.68 |      333.1 |          672.2 |     0.9508 | True                 |
+| Ea +10%       |     0.9566 |        345.6 |        353   |            12.51 | True         | constant       |         124.9  |      333.1 |          672.2 |     0.9566 | True                 |
+| plant UA -20% |     0.9553 |        347.8 |        355.7 |            10.37 | True         | staged         |          61.62 |      323.1 |          537.8 |     0.9502 | True                 |
 
 ### part10_design_scenarios
 
 |   target_X |   batch_min | meets_target   | policy   |   t_feed_min |   Tc_C |   UA_W_K |    X_A |   T_peak_C |   MTSR_max_C |   margin_K |   P_unsafe |   MTSR_p95_C |   X_A_p05 |
 |-----------:|------------:|:---------------|:---------|-------------:|-------:|---------:|-------:|-----------:|-------------:|-----------:|-----------:|-------------:|----------:|
-|       0.95 |         240 | True           | staged   |        124.9 |     40 |    168.1 | 0.9525 |      71.15 |        80.29 |      13.85 |          0 |        80.57 |    0.9521 |
-|       0.92 |         240 | True           | staged   |        124.9 |     30 |    168.1 | 0.9298 |      63.48 |        74.85 |      20.15 |          0 |        75.13 |    0.9291 |
-|       0.9  |         240 | True           | staged   |        158   |     30 |    168.1 | 0.9114 |      61.03 |        70.22 |      23.97 |          0 |        70.46 |    0.9107 |
-|       0.95 |         300 | True           | staged   |        158   |     40 |    168.1 | 0.9512 |      68.09 |        76.44 |      16.91 |          0 |        76.7  |    0.9509 |
-|       0.95 |         360 | True           | constant |        200   |     40 |    168.1 | 0.9512 |      66.29 |        75.46 |      18.71 |          0 |        75.71 |    0.9509 |
+|       0.95 |         240 | True           | constant |       124.9  |     60 |    672.2 | 0.9503 |      72.28 |        80.66 |      12.72 |          0 |        80.83 |    0.95   |
+|       0.92 |         240 | True           | staged   |        98.68 |     50 |    672.2 | 0.928  |      65.76 |        74.66 |      19.24 |          0 |        74.84 |    0.9278 |
+|       0.9  |         240 | True           | constant |       158    |     50 |    672.2 | 0.9023 |      60.65 |        71.62 |      23.38 |          0 |        71.79 |    0.9019 |
+|       0.95 |         300 | True           | constant |       158    |     60 |    672.2 | 0.9549 |      70.27 |        78.02 |      14.73 |          0 |        78.17 |    0.9547 |
+|       0.95 |         360 | True           | constant |        98.68 |     50 |    672.2 | 0.9501 |      65.07 |        77.73 |      17.27 |          0 |        77.94 |    0.9499 |
