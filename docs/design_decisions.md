@@ -12,7 +12,7 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | # | Decision | Value | Set in | Reason | Status |
 |---|---|---|---|---|---|
 | D1 | Charge of A | 600 L at 2.0 mol/L | `FULL["V0"]` | With 300 L of B the final volume is 900 L, a 90 % fill of the 1000 L vessel. Typical working fills are 70–85 %, so this is at the high end; revisit if more headspace is needed. | Settled |
-| D2 | B fed per A charged | 1.0 mol/mol | `FULL["B_to_A"]` | Stoichiometric. Excess B would speed the end of the batch but adds unreacted B that can react if cooling fails (higher MTSR). | Revisit after the final fit |
+| D2 | B fed per A charged | 1.0 mol/mol | `FULL["B_to_A"]` | Stoichiometric. Excess B would speed the end of the batch but adds unreacted B that can react if cooling fails (higher MTSR). | TBD: decide at the end with all runs |
 | D3 | Jacket UA scaling | UA ∝ V^(2/3) from 15 W/K at 3 L, about 670 W/K at 900 L | `ua_scaled()` | Heat transfer area of geometrically similar vessels scales with V^(2/3). The design step sweeps UA from 0.25 to 2 times this value, so the result does not hinge on the estimate. | Settled |
 | D4 | Feed temperature | 25 °C | `FULL["T_feed"]` | B stored at ambient. The cold feed absorbs some reaction heat. | Settled |
 
@@ -42,7 +42,7 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | E3 | Runs requested in pairs, 150 samples, 150 min | | planner defaults | TA approved pairs with one-day turnaround. Five single runs could not finish before the deadline. | Settled |
 | E4 | Run 3 moved from 333 K to 315 K | | request email | Planner's top pair had both runs at 333 K. A third temperature tests the Arrhenius form, at a small cost in predicted E_a precision (SE 0.13 instead of 0.11 kJ/mol). | Settled (deliberate override) |
 | E5 | Stopping rule | Fit adequate (s² 0.8–1.25, no residual trend), then stop when every 95 % CI is within ±5 % or the best next run cuts the worst SE by < 10 %; otherwise use the 5-run budget | `STOP_*` | Stops when more data would not change the design. | Settled |
-| E6 | Runs 4 and 5 | separately or as a pair | | Depends on how much Runs 2–3 narrow E_a. | Open: decide after the Runs 2–3 fit |
+| E6 | Runs 4 and 5 | separately or as a pair | | Depends on how much Runs 2–3 narrow E_a. | TBD: decide after the Runs 2–3 fit |
 
 ## 5. Safety criterion (report Part 9)
 
@@ -52,14 +52,14 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | S2 | Normal-operation margin | T_max ≤ 85 °C (15 K) | `MARGIN_NORMAL` | Room for disturbances and control overshoot. | Settled |
 | S3 | Cooling-failure margin | MTSR ≤ 95 °C (5 K) | `MARGIN_FAILURE` | MTSR is already a worst case (all unreacted B reacts adiabatically), so a smaller margin is used. | Settled |
 | S4 | Criticality assessment | Stoessel classes from MTSR, MTT and TD24 | report | Industry-standard thermal risk classification. | Settled |
-| S5 | High-temperature interlock trip | 70 °C | `T_TRIP` | Cuts the feed so no more B accumulates. **Conflict:** the current recommended design peaks at 81 °C in normal operation, above the trip. | Open: set from the final design's peak, with an alarm below it |
+| S5 | High-temperature interlock trip | 70 °C | `T_TRIP` | Cuts the feed so no more B accumulates. **Conflict:** the current recommended design peaks at 81 °C in normal operation, above the trip. | Leaning (Run 1 fit): rule Normal peak + margin < alarm < trip < limit − margin, with margins from instrument uncertainty, operator response time, process variability and worst-case upset. For 92 %/240 min: trip about 80 °C (worst failure peak 89.9 °C), alarm about 75 °C. Recheck after Fit 2 |
 
 ## 6. Design objective and selection rule (report Part 10)
 
 | # | Decision | Value | Set in | Reason | Status |
 |---|---|---|---|---|---|
-| P1 | Batch time | 240 min | `BATCH_TIME` | Placeholder production cycle. | Open |
-| P2 | Target conversion of A | 0.95 | `TARGET_X` | Placeholder. At 0.95 the MTSR margin is only 3.8 K. At 0.92 it is 13 K (`part10_design_scenarios.csv`). | Open: decide after the final fit |
+| P1 | Batch time | 240 min | `BATCH_TIME` | Kept at 240 min: a 360 min batch costs about a third of capacity (less once turnaround time is counted) and may need a second reactor. | Leaning (Run 1 fit) |
+| P2 | Target conversion of A | 0.95 | `TARGET_X` | Placeholder. At 0.95 the MTSR margin is only 3.8 K. At 0.92 it is 13 K (`part10_design_scenarios.csv`). | Leaning 0.92 (Run 1 fit): no lost throughput, no new equipment, and the only option with a workable alarm-trip window. Cost: about 3 % less product per batch, plus recycle or separation of unreacted A. Recheck after Fit 2 |
 | P3 | Selection rule | smallest UA that is safe and meets the target, then the largest safety margin | `design_optimization.pick()` | The cheapest jacket that does the job, then the most robust option among equals. | Settled |
 | P4 | Feed policies searched | constant rate; two-stage (fast then slow) | `design_optimization.py` | A staged feed lets B react early while the reactor is cool, limiting accumulation. | Settled |
 | P5 | Robustness tests | E_a ±10 %, UA −20 %, Monte Carlo over the parameter covariance | `design_optimization.py` | Required by the brief; the Monte Carlo uses the actual fitted uncertainty. | Settled |
