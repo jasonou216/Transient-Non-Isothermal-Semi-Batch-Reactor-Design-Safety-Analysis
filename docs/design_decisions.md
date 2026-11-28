@@ -52,15 +52,16 @@ All values live in `src/config.py` unless stated otherwise. To change one, edit 
 | S2 | Normal-operation margin | T_max ≤ 85 °C (15 K) | `MARGIN_NORMAL` | Room for disturbances and control overshoot. | Settled |
 | S3 | Cooling-failure margin | MTSR ≤ 95 °C (5 K) | `MARGIN_FAILURE` | MTSR is already a worst case (all unreacted B reacts adiabatically), so a smaller margin is used. | Settled |
 | S4 | Criticality assessment | Stoessel classes from MTSR, MTT and TD24 | report | Industry-standard thermal risk classification. | Settled |
-| S5 | High-temperature trip | 80 °C, cuts the B feed | `T_TRIP` | Keeps the worst cooling-failure peak about 6.5 K below the 95 °C failure limit (`part10_trip_sweep.csv`) and stays clear of the 85 °C region. Alarm at least ~5 K above the normal peak; value set with P2. | Trip settled 27 Nov (local); alarm open |
+| S5 | High-temperature alarm and trip | alarm 75 °C, trip 80 °C; trip action: automatic B-feed isolation | `T_ALARM`, `T_TRIP` | Alarm 9.2 K above the 92 % design's normal peak (65.8 °C) to avoid nuisance alarms, 5 K below the trip (about 12.5 min at 0.40 K/min). Trip keeps the worst cooling-failure peak at 88.5 °C, 6.5 K below 95 °C (`part10_trip_sweep.csv`). Only the feed isolation is credited. | Settled 28 Nov (local) |
 
-## 5a. Margin definitions (ledger decision D3, settled 27 Nov local)
+## 5a. Margin definitions (ledger decision D3, settled 28 Nov local)
 
-| Name | Definition | Example (95 %, 240 min, installed jacket) |
+| Name | Definition | 92 % / 240 min design |
 |---|---|---|
-| Normal margin | 85 °C normal-operation limit − normal peak temperature | 12.7 K |
-| Failure margin | 95 °C failure limit − worst-case temperature after a cooling failure | 14.3 K using MTSR (open: MTSR or the simulated failure peak) |
-| 100 °C margin | 100 °C process limit − normal peak temperature | 27.7 K |
+| Normal margin | 85 °C − normal peak temperature | 85 − 65.8 = 19.2 K |
+| Failure margin (primary safety metric) | 95 °C − MTSR | 95 − 74.7 = 20.3 K |
+| Protection-system margin | 95 °C − worst simulated cooling-failure peak with the 80 °C feed trip | 95 − 88.5 = 6.5 K |
+| 100 °C margin | 100 °C − normal peak | 34.2 K |
 
 ## 6. Design objective and selection rule (report Part 10)
 

@@ -80,7 +80,11 @@ MARGIN_NORMAL = 15.0   # K
 MARGIN_FAILURE = 5.0   # K
 T_TRIP = 353.15        # K (80 C), high-temperature trip that cuts the B feed.  DECISION D1 (27 Nov local):
                        #    worst cooling-failure peak stays well below 95 C, clear of the 85 C region.
-                       #    The alarm setpoint waits on D2 (rule: at least ~5 K above the normal peak).
+                       #    Action: automatic B-feed isolation, the only protection credited in the
+                       #    safety calculation (operator action, cooling restoration, dump, quench: not credited).
+T_ALARM = 348.15       # K (75 C), high-temperature alarm.  DECISION D1 (28 Nov local): 9.2 K above the
+                       #    92 % design's normal peak (fewer nuisance alarms), 5 K below the trip
+                       #    (about 12.5 min of operator time at 0.40 K/min).
 
 # DECISION D4 (27 Nov local): design at the jacket that would be installed (ua_scaled(), 672 W/K),
 # then the largest margin. "smallest" restores the earlier rule (smallest UA reaching the target).

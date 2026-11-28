@@ -140,6 +140,7 @@ def main(dataset):
         ax[3].plot(d.t, d["T"], label=f"{c}, fail at {row['t_fail']:.0f} min")
     ax[3].axhline(C.T_LIMIT, color="r", lw=1, label="T limit")
     ax[3].axhline(C.T_TRIP, color="grey", ls=":", lw=1, label=f"feed trip ({C.T_TRIP - 273.15:.0f} C)")
+    ax[3].axhline(C.T_ALARM, color="C4", ls="--", lw=1, label=f"alarm ({C.T_ALARM - 273.15:.0f} C)")
     ax[3].set_ylabel("T (K)")
     ax[3].set_title("worst-case cooling failure")
     for a in ax:
